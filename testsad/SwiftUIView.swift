@@ -25,7 +25,9 @@ struct SwiftUIView: View {
 
             HStack(spacing: 40) {
                 Button("Start Recording") {
-                    try? speechRecognizer.startRecording()
+                    Task {
+                        await speechRecognizer.restartRecording()
+                    }
                 }
 
                 Button("Stop Recording") {
@@ -48,7 +50,12 @@ struct SwiftUIView: View {
             if url.scheme == "testsadapp", url.host == "startRecording" {
                 print("🚀 App opened via Shortcut to start recording")
                 openedViaShortcut = true
-                try? speechRecognizer.startRecording()
+
+                // Delay to allow Siri to release microphone
+                Task {
+                    try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s
+                    await speechRecognizer.restartRecording()
+                }
             }
         }
     }
@@ -69,7 +76,6 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
     }
     
     func requestPermissions() {
-        // Speech recognition permission
         SFSpeechRecognizer.requestAuthorization { status in
             DispatchQueue.main.async {
                 switch status {
@@ -79,7 +85,6 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
             }
         }
         
-        // Microphone permission
         if #available(iOS 17.0, *) {
             AVAudioApplication.requestRecordPermission { granted in
                 print(granted ? "✅ Microphone access granted" : "❌ Microphone access denied")
@@ -91,10 +96,32 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
         }
     }
     
-    func startRecording() throws {
+    func restartRecording() async {
+        if audioEngine.isRunning {
+            stopRecording()
+        }
+        resetRecognition()
+        
+        // Small delay to allow SFSpeechRecognizer to fully reset
+        try? await Task.sleep(nanoseconds: 150_000_000) // 0.15s
+        
+        do {
+            try startRecording()
+        } catch {
+            print("❌ Failed to start recording: \(error)")
+        }
+    }
+    
+    private func resetRecognition() {
         recognitionTask?.cancel()
         recognitionTask = nil
-        
+        recognitionRequest = nil
+        audioEngine.stop()
+        audioEngine.reset()
+        transcribedText = ""
+    }
+    
+    func startRecording() throws {
         let audioSession = AVAudioSession.sharedInstance()
         try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
         try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
@@ -103,7 +130,9 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
         recognitionRequest?.shouldReportPartialResults = true
         
         let inputNode = audioEngine.inputNode
-        recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest!) { result, error in
+        recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest!) { [weak self] result, error in
+            guard let self = self else { return }
+            
             if let result = result {
                 DispatchQueue.main.async {
                     self.transcribedText = result.bestTranscription.formattedString
@@ -128,8 +157,11 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
     }
     
     func stopRecording() {
-        audioEngine.stop()
-        recognitionRequest?.endAudio()
+        if audioEngine.isRunning {
+            audioEngine.stop()
+            recognitionRequest?.endAudio()
+            print("🛑 Recording stopped")
+        }
     }
     
     func saveToTxt() {
@@ -144,7 +176,6 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
         
         do {
             if FileManager.default.fileExists(atPath: fileURL.path) {
-                // Append if file exists
                 let handle = try FileHandle(forWritingTo: fileURL)
                 handle.seekToEndOfFile()
                 if let data = entry.data(using: .utf8) {
@@ -152,7 +183,6 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
                 }
                 handle.closeFile()
             } else {
-                // Create new file
                 try entry.write(to: fileURL, atomically: true, encoding: .utf8)
             }
             print("💾 Appended TXT at: \(fileURL)")
