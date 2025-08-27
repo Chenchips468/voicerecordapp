@@ -1,18 +1,18 @@
-//
-//  testsadApp.swift
-//  testsad
-//
-//  Created by William Chen on 8/16/25.
-//
-
 import SwiftUI
 
 @main
-struct testsadApp: App {
+struct TestsadApp: App {
+    @StateObject private var speech = SpeechRecognizer()
+
+    init() {
+        // Make PhoneSession alive early and give it the speech engine.
+        PhoneSession.shared.speechRecognizer = speech
+    }
+
     var body: some Scene {
         WindowGroup {
-            //ContentView()
             SwiftUIView()
+                .environmentObject(speech) // optionally inject, or keep your @StateObject in the view
         }
     }
 }

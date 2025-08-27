@@ -6,7 +6,32 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9E12C9E32E5EA54A006D1AD1 /* Noterwatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 9E12C9C32E5EA548006D1AD1 /* Noterwatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
+		9E12C9D02E5EA54A006D1AD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9E8B065E2E514529006E1427 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E12C9C22E5EA548006D1AD1;
+			remoteInfo = "Noterwatch Watch App";
+		};
+		9E12C9DA2E5EA54A006D1AD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9E8B065E2E514529006E1427 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E12C9C22E5EA548006D1AD1;
+			remoteInfo = "Noterwatch Watch App";
+		};
+		9E12C9E12E5EA54A006D1AD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9E8B065E2E514529006E1427 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E12C9C22E5EA548006D1AD1;
+			remoteInfo = "Noterwatch Watch App";
+		};
 		9E8B06742E51452A006E1427 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9E8B065E2E514529006E1427 /* Project object */;
@@ -23,7 +48,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		9E12C9E42E5EA54A006D1AD1 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				9E12C9E32E5EA54A006D1AD1 /* Noterwatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		9E12C9C32E5EA548006D1AD1 /* Noterwatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Noterwatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E12C9CF2E5EA54A006D1AD1 /* Noterwatch Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Noterwatch Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E12C9D92E5EA54A006D1AD1 /* Noterwatch Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Noterwatch Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E8B06662E514529006E1427 /* testsad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testsad.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E8B06732E51452A006E1427 /* testsadTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = testsadTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E8B067D2E51452A006E1427 /* testsadUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = testsadUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -40,6 +82,21 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		9E12C9C42E5EA548006D1AD1 /* Noterwatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Noterwatch Watch App";
+			sourceTree = "<group>";
+		};
+		9E12C9D22E5EA54A006D1AD1 /* Noterwatch Watch AppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Noterwatch Watch AppTests";
+			sourceTree = "<group>";
+		};
+		9E12C9DC2E5EA54A006D1AD1 /* Noterwatch Watch AppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Noterwatch Watch AppUITests";
+			sourceTree = "<group>";
+		};
 		9E8B06682E514529006E1427 /* testsad */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -61,6 +118,27 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9E12C9C02E5EA548006D1AD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9E12C9CC2E5EA54A006D1AD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9E12C9D62E5EA54A006D1AD1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9E8B06632E514529006E1427 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -91,6 +169,9 @@
 				9E8B06682E514529006E1427 /* testsad */,
 				9E8B06762E51452A006E1427 /* testsadTests */,
 				9E8B06802E51452A006E1427 /* testsadUITests */,
+				9E12C9C42E5EA548006D1AD1 /* Noterwatch Watch App */,
+				9E12C9D22E5EA54A006D1AD1 /* Noterwatch Watch AppTests */,
+				9E12C9DC2E5EA54A006D1AD1 /* Noterwatch Watch AppUITests */,
 				9E8B06672E514529006E1427 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,6 +182,9 @@
 				9E8B06662E514529006E1427 /* testsad.app */,
 				9E8B06732E51452A006E1427 /* testsadTests.xctest */,
 				9E8B067D2E51452A006E1427 /* testsadUITests.xctest */,
+				9E12C9C32E5EA548006D1AD1 /* Noterwatch Watch App.app */,
+				9E12C9CF2E5EA54A006D1AD1 /* Noterwatch Watch AppTests.xctest */,
+				9E12C9D92E5EA54A006D1AD1 /* Noterwatch Watch AppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,6 +192,74 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		9E12C9C22E5EA548006D1AD1 /* Noterwatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9E12C9EB2E5EA54A006D1AD1 /* Build configuration list for PBXNativeTarget "Noterwatch Watch App" */;
+			buildPhases = (
+				9E12C9BF2E5EA548006D1AD1 /* Sources */,
+				9E12C9C02E5EA548006D1AD1 /* Frameworks */,
+				9E12C9C12E5EA548006D1AD1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				9E12C9C42E5EA548006D1AD1 /* Noterwatch Watch App */,
+			);
+			name = "Noterwatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "Noterwatch Watch App";
+			productReference = 9E12C9C32E5EA548006D1AD1 /* Noterwatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9E12C9CE2E5EA54A006D1AD1 /* Noterwatch Watch AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9E12C9EC2E5EA54A006D1AD1 /* Build configuration list for PBXNativeTarget "Noterwatch Watch AppTests" */;
+			buildPhases = (
+				9E12C9CB2E5EA54A006D1AD1 /* Sources */,
+				9E12C9CC2E5EA54A006D1AD1 /* Frameworks */,
+				9E12C9CD2E5EA54A006D1AD1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9E12C9D12E5EA54A006D1AD1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9E12C9D22E5EA54A006D1AD1 /* Noterwatch Watch AppTests */,
+			);
+			name = "Noterwatch Watch AppTests";
+			packageProductDependencies = (
+			);
+			productName = "Noterwatch Watch AppTests";
+			productReference = 9E12C9CF2E5EA54A006D1AD1 /* Noterwatch Watch AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		9E12C9D82E5EA54A006D1AD1 /* Noterwatch Watch AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9E12C9ED2E5EA54A006D1AD1 /* Build configuration list for PBXNativeTarget "Noterwatch Watch AppUITests" */;
+			buildPhases = (
+				9E12C9D52E5EA54A006D1AD1 /* Sources */,
+				9E12C9D62E5EA54A006D1AD1 /* Frameworks */,
+				9E12C9D72E5EA54A006D1AD1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9E12C9DB2E5EA54A006D1AD1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9E12C9DC2E5EA54A006D1AD1 /* Noterwatch Watch AppUITests */,
+			);
+			name = "Noterwatch Watch AppUITests";
+			packageProductDependencies = (
+			);
+			productName = "Noterwatch Watch AppUITests";
+			productReference = 9E12C9D92E5EA54A006D1AD1 /* Noterwatch Watch AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		9E8B06652E514529006E1427 /* testsad */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9E8B06872E51452A006E1427 /* Build configuration list for PBXNativeTarget "testsad" */;
@@ -115,10 +267,12 @@
 				9E8B06622E514529006E1427 /* Sources */,
 				9E8B06632E514529006E1427 /* Frameworks */,
 				9E8B06642E514529006E1427 /* Resources */,
+				9E12C9E42E5EA54A006D1AD1 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				9E12C9E22E5EA54A006D1AD1 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				9E8B06682E514529006E1427 /* testsad */,
@@ -186,6 +340,17 @@
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					9E12C9C22E5EA548006D1AD1 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					9E12C9CE2E5EA54A006D1AD1 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 9E12C9C22E5EA548006D1AD1;
+					};
+					9E12C9D82E5EA54A006D1AD1 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 9E12C9C22E5EA548006D1AD1;
+					};
 					9E8B06652E514529006E1427 = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -216,11 +381,35 @@
 				9E8B06652E514529006E1427 /* testsad */,
 				9E8B06722E51452A006E1427 /* testsadTests */,
 				9E8B067C2E51452A006E1427 /* testsadUITests */,
+				9E12C9C22E5EA548006D1AD1 /* Noterwatch Watch App */,
+				9E12C9CE2E5EA54A006D1AD1 /* Noterwatch Watch AppTests */,
+				9E12C9D82E5EA54A006D1AD1 /* Noterwatch Watch AppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		9E12C9C12E5EA548006D1AD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9E12C9CD2E5EA54A006D1AD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9E12C9D72E5EA54A006D1AD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9E8B06642E514529006E1427 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -245,6 +434,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		9E12C9BF2E5EA548006D1AD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9E12C9CB2E5EA54A006D1AD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9E12C9D52E5EA54A006D1AD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9E8B06622E514529006E1427 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -269,6 +479,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		9E12C9D12E5EA54A006D1AD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9E12C9C22E5EA548006D1AD1 /* Noterwatch Watch App */;
+			targetProxy = 9E12C9D02E5EA54A006D1AD1 /* PBXContainerItemProxy */;
+		};
+		9E12C9DB2E5EA54A006D1AD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9E12C9C22E5EA548006D1AD1 /* Noterwatch Watch App */;
+			targetProxy = 9E12C9DA2E5EA54A006D1AD1 /* PBXContainerItemProxy */;
+		};
+		9E12C9E22E5EA54A006D1AD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9E12C9C22E5EA548006D1AD1 /* Noterwatch Watch App */;
+			targetProxy = 9E12C9E12E5EA54A006D1AD1 /* PBXContainerItemProxy */;
+		};
 		9E8B06752E51452A006E1427 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 9E8B06652E514529006E1427 /* testsad */;
@@ -282,6 +507,138 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		9E12C9E52E5EA54A006D1AD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9LSZYQ25UW;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Noterwatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = willic20.testsad;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = willic20.testsad.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.5;
+			};
+			name = Debug;
+		};
+		9E12C9E62E5EA54A006D1AD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9LSZYQ25UW;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Noterwatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = willic20.testsad;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = willic20.testsad.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.5;
+			};
+			name = Release;
+		};
+		9E12C9E72E5EA54A006D1AD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "willic20.Noterwatch-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Noterwatch Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Noterwatch Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 11.5;
+			};
+			name = Debug;
+		};
+		9E12C9E82E5EA54A006D1AD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "willic20.Noterwatch-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Noterwatch Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Noterwatch Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 11.5;
+			};
+			name = Release;
+		};
+		9E12C9E92E5EA54A006D1AD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "willic20.Noterwatch-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "Noterwatch Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 11.5;
+			};
+			name = Debug;
+		};
+		9E12C9EA2E5EA54A006D1AD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "willic20.Noterwatch-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "Noterwatch Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 11.5;
+			};
+			name = Release;
+		};
 		9E8B06852E51452A006E1427 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -536,6 +893,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		9E12C9EB2E5EA54A006D1AD1 /* Build configuration list for PBXNativeTarget "Noterwatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9E12C9E52E5EA54A006D1AD1 /* Debug */,
+				9E12C9E62E5EA54A006D1AD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9E12C9EC2E5EA54A006D1AD1 /* Build configuration list for PBXNativeTarget "Noterwatch Watch AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9E12C9E72E5EA54A006D1AD1 /* Debug */,
+				9E12C9E82E5EA54A006D1AD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9E12C9ED2E5EA54A006D1AD1 /* Build configuration list for PBXNativeTarget "Noterwatch Watch AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9E12C9E92E5EA54A006D1AD1 /* Debug */,
+				9E12C9EA2E5EA54A006D1AD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9E8B06612E514529006E1427 /* Build configuration list for PBXProject "testsad" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
