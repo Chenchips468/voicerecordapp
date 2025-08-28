@@ -8,6 +8,7 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
     @Published var isReachable = false
     @Published var status: String = "Ready"
     @Published var liveText: String = ""
+    @Published var isRecordingUI = false
 
     private override init() {
         super.init()
