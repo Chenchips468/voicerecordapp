@@ -32,12 +32,18 @@ struct SwiftUIView: View {
 
                 Button("Stop Recording") {
                     speechRecognizer.stopRecording()
-                    speechRecognizer.saveToTxt()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        speechRecognizer.saveToTxt()
+                    }
                 }
             }
 
             Button("Open TXT") {
                 speechRecognizer.openTxt()
+            }
+            
+            Button("Clear TXT") {
+                speechRecognizer.clearTxt()
             }
         }
         .padding()
@@ -69,6 +75,10 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
+    
+    private var silenceTimer: Timer?
+    private let silenceTimeout: TimeInterval = 10.0
+    private var hasUnsavedTranscription = false
     
     override init() {
         super.init()
@@ -119,6 +129,7 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
         audioEngine.stop()
         audioEngine.reset()
         transcribedText = ""
+        hasUnsavedTranscription = false
     }
     
     func startRecording() throws {
@@ -136,7 +147,9 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
             if let result = result {
                 DispatchQueue.main.async {
                     self.transcribedText = result.bestTranscription.formattedString
+                    self.hasUnsavedTranscription = true
                 }
+                self.resetSilenceTimer()
             }
             
             if error != nil || (result?.isFinal ?? false) {
@@ -154,9 +167,24 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
         try audioEngine.start()
         
         print("🎙 Listening...")
+        resetSilenceTimer()
+    }
+    
+    func resetSilenceTimer() {
+        silenceTimer?.invalidate()
+        silenceTimer = Timer.scheduledTimer(withTimeInterval: silenceTimeout, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            self.stopRecording()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.saveToTxt()
+            }
+            print("⏰ Auto-stopped recording due to 10 seconds of silence")
+        }
     }
     
     func stopRecording() {
+        silenceTimer?.invalidate()
+        silenceTimer = nil
         if audioEngine.isRunning {
             audioEngine.stop()
             recognitionRequest?.endAudio()
@@ -165,6 +193,16 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
     }
     
     func saveToTxt() {
+        guard hasUnsavedTranscription else {
+            print("⚠️ No new transcription to save. Skipping.")
+            return
+        }
+        
+        if transcribedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            print("⚠️ transcribedText is empty or whitespace only. Skipping save.")
+            return
+        }
+        
         let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Transcription.txt")
         
@@ -176,16 +214,15 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
         
         do {
             if FileManager.default.fileExists(atPath: fileURL.path) {
-                let handle = try FileHandle(forWritingTo: fileURL)
-                handle.seekToEndOfFile()
-                if let data = entry.data(using: .utf8) {
-                    handle.write(data)
-                }
-                handle.closeFile()
+                let oldContent = try String(contentsOf: fileURL, encoding: .utf8)
+                let newContent = entry + oldContent
+                try newContent.write(to: fileURL, atomically: true, encoding: .utf8)
             } else {
                 try entry.write(to: fileURL, atomically: true, encoding: .utf8)
             }
-            print("💾 Appended TXT at: \(fileURL)")
+            print("💾 Updated TXT at: \(fileURL)")
+            hasUnsavedTranscription = false
+            transcribedText = ""
         } catch {
             print("❌ Error saving file: \(error)")
         }
@@ -195,9 +232,14 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
         let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Transcription.txt")
         
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            print("❌ File does not exist")
-            return
+        if !FileManager.default.fileExists(atPath: fileURL.path) {
+            do {
+                try "".write(to: fileURL, atomically: true, encoding: .utf8)
+                print("🆕 Created empty Transcription.txt file")
+            } catch {
+                print("❌ Error creating empty Transcription.txt: \(error)")
+                return
+            }
         }
         
         let controller = UIDocumentInteractionController(url: fileURL)
@@ -215,6 +257,27 @@ class SpeechRecognizer: NSObject, ObservableObject, UIDocumentInteractionControl
     func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
         let windowScene = UIApplication.shared.connectedScenes.first as! UIWindowScene
         return windowScene.windows.first!.rootViewController!
+    }
+    
+    func clearTxt() {
+        let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("Transcription.txt")
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            do {
+                try FileManager.default.removeItem(at: fileURL)
+                print("🗑️ Transcription.txt cleared")
+            } catch {
+                print("❌ Error clearing Transcription.txt: \(error)")
+            }
+        } else {
+            print("ℹ️ Transcription.txt does not exist to clear")
+        }
+        do {
+            try "".write(to: fileURL, atomically: true, encoding: .utf8)
+            print("🆕 Created empty Transcription.txt file after clearing")
+        } catch {
+            print("❌ Error creating empty Transcription.txt after clearing: \(error)")
+        }
     }
 }
 
