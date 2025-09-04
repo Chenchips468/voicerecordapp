@@ -12,7 +12,7 @@ import WatchConnectivity
 struct Noterwatch_Watch_AppApp: App {
     var body: some Scene {
         WindowGroup {
-            WatchContentView()
+            WatchContentView2()
         }
     }
 }

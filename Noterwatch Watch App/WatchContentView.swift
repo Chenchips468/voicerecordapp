@@ -32,30 +32,32 @@ struct WatchContentView: View {
         .padding()
     }
 }
-
-struct StartRecordingIntentWatch: AppIntent {
-    static var title: LocalizedStringResource = "Start Recording on Watch"
-
-    static var description = IntentDescription("Starts recording on the watch.")
-
-    static var openAppWhenRun: Bool = true
-
-    func perform() throws -> some IntentResult {
-        DispatchQueue.main.async {
-            if !WatchSession.shared.isRecordingUI {
-                WatchSession.shared.isRecordingUI = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    WatchSession.shared.sendCommand("start")
-                    print("⌚️ Simulated Start button press from Siri shortcut")
-                }
-            }
-        }
-        return .result()
-    }
-}
-
-struct MyWatchShortcuts: AppShortcutsProvider {
-    static var appShortcuts: [AppShortcut] {
-        AppShortcut(intent: StartRecordingIntentWatch(), phrases: ["Start recording in \(.applicationName)"], shortTitle: "Start Recording", systemImageName: "mic.fill")
-    }
-}
+/*
+ struct StartRecordingIntentWatch: AppIntent {
+ static var title: LocalizedStringResource = "Start Recording on Watch"
+ 
+ static var description = IntentDescription("Starts recording on the watch.")
+ 
+ static var openAppWhenRun: Bool = true
+ 
+ func perform() throws -> some IntentResult {
+ DispatchQueue.main.async {
+ if !WatchSession.shared.isRecordingUI {
+ WatchSession.shared.isRecordingUI = true
+ DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+ WatchSession.shared.sendCommand("start")
+ print("⌚️ Simulated Start button press from Siri shortcut")
+ }
+ }
+ }
+ return .result()
+ }
+ }
+ 
+ 
+ struct MyWatchShortcuts: AppShortcutsProvider {
+ static var appShortcuts: [AppShortcut] {
+ AppShortcut(intent: StartRecordingIntentWatch(), phrases: ["Start recording in \(.applicationName)"], shortTitle: "Start Recording", systemImageName: "mic.fill")
+ }
+ }
+ */
