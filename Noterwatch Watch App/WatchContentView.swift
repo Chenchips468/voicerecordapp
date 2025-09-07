@@ -8,7 +8,14 @@ struct WatchContentView: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Text(wc.status).font(.caption).lineLimit(1)
+            HStack {
+                Text(wc.status).font(.caption).lineLimit(1)
+                if wc.isOfflineMode {
+                    Image(systemName: "wifi.slash")
+                        .foregroundColor(.orange)
+                        .font(.caption)
+                }
+            }
 
             ScrollView {
                 Text(wc.liveText.isEmpty ? " " : wc.liveText)
@@ -27,7 +34,7 @@ struct WatchContentView: View {
                 wc.isRecordingUI.toggle()
             }
             .buttonStyle(.borderedProminent)
-            .disabled(!wc.isReachable)
+            // Remove the disabled modifier to allow recording in offline mode
         }
         .padding()
     }

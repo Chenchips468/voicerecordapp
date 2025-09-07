@@ -42,8 +42,13 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         print("📱 Phone's didReceive delegate called by Watch's transferFile")
         print("📱 Received file: \(file.fileURL.lastPathComponent)")
         
+        var isQueuedRecording = false
         if let metadata = file.metadata {
             print("📱 File metadata: \(metadata)")
+            if metadata["queued"] as? Bool == true {
+                print("📱 Processing queued recording from offline mode")
+                isQueuedRecording = true
+            }
         }
         
         let fileURL = file.fileURL
@@ -52,6 +57,20 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
             return
         }
         print("✅ Received valid m4a file from Watch's transferFile")
+        
+        if isQueuedRecording {
+            print("📱 Processing queued recording from offline mode")
+            // Send acknowledgment back to watch
+            if session.isReachable {
+                session.sendMessage(
+                    ["status": "Queued recording received"],
+                    replyHandler: nil,
+                    errorHandler: { error in
+                        print("❌ Failed to send queue acknowledgment: \(error.localizedDescription)")
+                    }
+                )
+            }
+        }
         
         // Add the received file to recordings
         DispatchQueue.main.async {
@@ -193,8 +212,39 @@ final class PhoneSession: NSObject, WCSessionDelegate {
 
     func sessionReachabilityDidChange(_ session: WCSession) {
         print("📱 Reachability changed: \(session.isReachable)")
+        if session.isReachable {
+            // Send ready status to watch when connection is restored
+            session.sendMessage(
+                ["status": "Phone connected - Ready for sync"],
+                replyHandler: nil,
+                errorHandler: { error in
+                    print("❌ Failed to send ready status: \(error.localizedDescription)")
+                }
+            )
+        }
     }
 
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
         print("📱 didReceiveUserInfo called: \(userInfo)")
+        
+        guard let cmd = userInfo["command"] as? String else {
+            print("⚠️ Unknown userInfo payload: \(userInfo)")
+            return
+        }
+        
+        print("📱 Handling queued command: \(cmd)")
+        DispatchQueue.main.async {
+            switch cmd {
+            case "start":
+                print("🎙 Received 'start' command from queued Watch command")
+            case "stop":
+                print("🛑 Received 'stop' command from queued Watch command")
+                // Optionally push status back to Watch
+                if WCSession.default.isReachable {
+                    WCSession.default.sendMessage(["status": "Saved ✓"], replyHandler: nil, errorHandler: nil)
+                }
+            default:
+                print("⚠️ Unrecognized queued command: \(cmd)")
+            }
+        }
     }
