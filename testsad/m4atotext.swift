@@ -172,22 +172,32 @@ struct m4atotext: View {
         // Use sequential async calls to ensure order and correct appending
         let recordingsCopy = recordings
         func processNext(index: Int) {
-            if index >= recordingsCopy.count { return }
+            if index >= recordingsCopy.count {
+                // Sort transcriptions by date descending (newest first)
+                self.transcriptions.sort { $0.date > $1.date }
+                // Rebuild txtContent in sorted order
+                var rebuiltContent = ""
+                for entry in self.transcriptions {
+                    let dateString = dateFormatter.string(from: entry.date)
+                    rebuiltContent.append("[\(dateString)] \(entry.text)\n")
+                }
+                DispatchQueue.main.async {
+                    self.txtContent = rebuiltContent
+                    let fileURL = self.getTxtFileURL()
+                    do {
+                        try self.txtContent.write(to: fileURL, atomically: true, encoding: .utf8)
+                    } catch {
+                        self.errorMessage = "Failed to update transcriptions: \(error.localizedDescription)"
+                    }
+                }
+                return
+            }
             let recording = recordingsCopy[index]
             transcribeAndCollect(url: recording) { text, creationDate in
                 if let text = text {
                     let dateToUse = creationDate ?? Date()
-                    let dateString = dateFormatter.string(from: dateToUse)
-                    let entry = "[\(dateString)] \(text)"
                     DispatchQueue.main.async {
                         self.transcriptions.append((date: dateToUse, text: text))
-                        self.txtContent.append(contentsOf: entry + "\n")
-                        let fileURL = self.getTxtFileURL()
-                        do {
-                            try self.txtContent.write(to: fileURL, atomically: true, encoding: .utf8)
-                        } catch {
-                            self.errorMessage = "Failed to update transcriptions: \(error.localizedDescription)"
-                        }
                         // Process next after completion
                         processNext(index: index + 1)
                     }
