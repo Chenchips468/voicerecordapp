@@ -38,6 +38,7 @@ class RecordingQueue: ObservableObject {
         )
         recordings.append(recording)
         saveQueue()
+        print(recordings.count)
     }
     
     func markAsUploaded(fileURL: URL) {
