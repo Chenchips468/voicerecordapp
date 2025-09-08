@@ -3,6 +3,7 @@ import Foundation
 struct QueuedRecording: Codable {
     let fileURL: String
     let timestamp: Date
+    let location: String
     let isUploaded: Bool
 }
 
@@ -34,6 +35,7 @@ class RecordingQueue: ObservableObject {
         let recording = QueuedRecording(
             fileURL: fileURL.path,
             timestamp: Date(),
+            location: "Unknown", // Default location
             isUploaded: false
         )
         recordings.append(recording)

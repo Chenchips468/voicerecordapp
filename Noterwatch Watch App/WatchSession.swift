@@ -37,6 +37,12 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
         DispatchQueue.main.async {
             self.isReachable = session.isReachable
         }
+        // Add delay before syncing queued recordings to ensure session is fully ready
+        if activationState == .activated && session.isReachable {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.syncQueuedRecordings()
+            }
+        }
     }
     
     func sessionReachabilityDidChange(_ session: WCSession) {
@@ -45,9 +51,29 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
             self.isOfflineMode = !session.isReachable
             print("⌚️ Reachability changed: \(session.isReachable)")
             
-            if session.isReachable {
-                self.syncQueuedRecordings()
+            if session.isReachable && session.activationState == .activated {
+                // Add delay before syncing queued recordings to ensure session is fully ready
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    self.syncQueuedRecordings()
+                }
             }
+        }
+    }
+    
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        print("⌚️ Received message from phone: \(message)")
+        // Handle incoming messages from the phone here as needed
+        
+        // For example, if you expect a "ping" command, reply with "pong"
+        if let command = message["command"] as? String {
+            switch command {
+            case "ping":
+                replyHandler(["response": "pong"])
+            default:
+                replyHandler(["response": "unknown command"])
+            }
+        } else {
+            replyHandler(["response": "no command found"])
         }
     }
     
@@ -60,6 +86,11 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     private func syncQueuedRecordings() {
+        guard WCSession.default.activationState == .activated, WCSession.default.isReachable else {
+            print("⌚️ Cannot sync queued recordings: session not fully activated or not reachable")
+            return
+        }
+        
         let pendingRecordings = recordingQueue.getPendingRecordings()
         guard !pendingRecordings.isEmpty else { return }
         
@@ -68,8 +99,18 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
         for fileURL in pendingRecordings {
             guard FileManager.default.fileExists(atPath: fileURL.path) else { continue }
             
+            // Use original recording timestamp and location
+            let queuedRecording = recordingQueue.recordings.first { $0.fileURL == fileURL.path }
+            let timestamp = queuedRecording?.timestamp.timeIntervalSince1970 ?? Date().timeIntervalSince1970
+            let location = queuedRecording?.location ?? "Unknown"
+            
             print("⌚️ Syncing queued recording: \(fileURL.lastPathComponent)")
-            let transfer = WCSession.default.transferFile(fileURL, metadata: ["type": "recording", "queued": true])
+            let transfer = WCSession.default.transferFile(fileURL, metadata: [
+                "type": "recording",
+                "queued": true,
+                "date": timestamp,
+                "location": location
+            ])
             
             transfer.progress.observe(\.fractionCompleted) { progress, _ in
                 DispatchQueue.main.async {
@@ -77,8 +118,6 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
                     self.status = "Syncing queued: \(percentage)%"
                 }
             }
-            
-            recordingQueue.markAsUploaded(fileURL: fileURL)
         }
     }
     
@@ -88,7 +127,6 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
         print("⌚️ Attempting to send command: \(command)")
         
         if WCSession.default.isReachable {
-            // Try immediate delivery
             WCSession.default.sendMessage(
                 ["command": command],
                 replyHandler: { reply in
@@ -106,7 +144,6 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
                 }
             }
         } else {
-            // Fallback: queue for later delivery
             WCSession.default.transferUserInfo(["command": command])
             print("⌚️ Queued command '\(command)' for later delivery")
             
@@ -139,7 +176,6 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
             return
         }
         
-        // Verify file exists and is m4a
         guard fileURL.pathExtension.lowercased() == "m4a",
               FileManager.default.fileExists(atPath: fileURL.path) else {
             print("❌ Invalid file or not m4a format: \(fileURL.lastPathComponent)")
@@ -149,7 +185,6 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
             return
         }
         
-        // Request date from phone first
         print("⌚️ Requesting date from phone before sending recording")
         WCSession.default.sendMessage(
             ["request": "date"],
@@ -157,7 +192,7 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
                 if let _ = reply["date"] as? Date {
                     print("⌚️ Received date from phone, proceeding with recording transfer")
                     self.proceedWithRecordingTransfer(fileURL)
-                    self.syncAndClearQueuedRecordings()
+                    self.syncQueuedRecordings()
                 } else {
                     print("❌ No date received from phone, queueing recording")
                     self.handleOfflineRecording(fileURL)
@@ -171,13 +206,16 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
     }
     
     private func proceedWithRecordingTransfer(_ fileURL: URL) {
-        
         print("⌚️ Starting file transfer: \(fileURL.lastPathComponent)")
         print("⌚️ This file will trigger session(_ session: WCSession, didReceive file:) on iPhone")
         
-        let transfer = WCSession.default.transferFile(fileURL, metadata: ["type": "recording"])
+        let metadata: [String: Any] = [
+            "type": "recording",
+            "date": Date().timeIntervalSince1970,
+            "location": "Unknown"
+        ]
+        let transfer = WCSession.default.transferFile(fileURL, metadata: metadata)
         
-        // Monitor transfer progress
         transfer.progress.observe(\.fractionCompleted) { progress, _ in
             DispatchQueue.main.async {
                 let percentage = Int(progress.fractionCompleted * 100)
@@ -198,8 +236,17 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
             print("⌚️ Checking file existence for \(fileURL.path)")
             guard FileManager.default.fileExists(atPath: fileURL.path) else { continue }
             
+            let queuedRecording = recordingQueue.recordings.first { $0.fileURL == fileURL.path }
+            let timestamp = queuedRecording?.timestamp.timeIntervalSince1970 ?? Date().timeIntervalSince1970
+            let location = queuedRecording?.location ?? "Unknown"
+            
             print("⌚️ Syncing queued recording: \(fileURL.lastPathComponent)")
-            let transfer = WCSession.default.transferFile(fileURL, metadata: ["type": "recording", "queued": true])
+            let transfer = WCSession.default.transferFile(fileURL, metadata: [
+                "type": "recording",
+                "queued": true,
+                "date": timestamp,
+                "location": location
+            ])
             
             transfer.progress.observe(\.fractionCompleted) { progress, _ in
                 DispatchQueue.main.async {
@@ -207,8 +254,6 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
                     self.status = "Syncing queued: \(percentage)%"
                 }
             }
-            
-            recordingQueue.markAsUploaded(fileURL: fileURL)
         }
     }
     
@@ -217,9 +262,16 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
             if let error = error {
                 print("❌ File transfer failed: \(error.localizedDescription)")
                 self.status = "Error: Transfer failed"
+                // Do not mark as uploaded; keep in queue for retry
             } else {
                 print("✅ File transfer completed successfully")
                 self.status = "Transfer complete"
+                
+                if let metadata = fileTransfer.file.metadata as? [String: Any],
+                   let queued = metadata["queued"] as? Bool,
+                   queued == true {
+                    self.recordingQueue.markAsUploaded(fileURL: fileTransfer.file.fileURL)
+                }
             }
         }
     }

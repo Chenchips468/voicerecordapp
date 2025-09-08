@@ -175,10 +175,11 @@ class AudioRecorderManager: NSObject, ObservableObject, AVAudioRecorderDelegate 
     }
 
     /// Add a new recording from the specified URL and insert it into the recordings list.
-    func addRecording(from url: URL) {
+    func addRecording(from url: URL, date: Date? = nil, location: String? = nil) {
         let values = try? url.resourceValues(forKeys: [.creationDateKey])
-        let creationDate = values?.creationDate ?? Date()
-        let recording = Recording(url: url, name: url.lastPathComponent, date: creationDate, location: "Unknown")
+        let creationDate = date ?? values?.creationDate ?? Date()
+        let recordingLocation = location ?? "Unknown"
+        let recording = Recording(url: url, name: url.lastPathComponent, date: creationDate, location: recordingLocation)
         DispatchQueue.main.async {
             print(self.recordings.count)
             self.recordings.insert(recording, at: 0)

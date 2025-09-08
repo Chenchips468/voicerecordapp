@@ -134,7 +134,7 @@ struct m4atotext: View {
         }
     }
 
-    private func transcribeAndCollect(url: URL, completion: @escaping (String?, Date?) -> Void) {
+    private func transcribeAndCollect(url: URL, date: Date, completion: @escaping (String?, Date?) -> Void) {
         guard isAuthorized else {
             completion(nil, nil)
             return
@@ -144,20 +144,12 @@ struct m4atotext: View {
             completion(nil, nil)
             return
         }
-        // Get file creation date
-        var creationDate: Date? = nil
-        do {
-            let attrs = try FileManager.default.attributesOfItem(atPath: url.path)
-            creationDate = attrs[.creationDate] as? Date
-        } catch {
-            creationDate = nil
-        }
         let request = SFSpeechURLRecognitionRequest(url: url)
         recognizer.recognitionTask(with: request) { result, error in
             if let result = result, result.isFinal {
-                completion(result.bestTranscription.formattedString, creationDate)
+                completion(result.bestTranscription.formattedString, date)
             } else if error != nil {
-                completion(nil, creationDate)
+                completion(nil, date)
             }
         }
     }
@@ -170,7 +162,7 @@ struct m4atotext: View {
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
         // Use sequential async calls to ensure order and correct appending
-        let recordingsCopy = recordings
+        let recordingsCopy = AudioRecorderManager.shared.recordings
         func processNext(index: Int) {
             if index >= recordingsCopy.count {
                 // Sort transcriptions by date descending (newest first)
@@ -193,11 +185,10 @@ struct m4atotext: View {
                 return
             }
             let recording = recordingsCopy[index]
-            transcribeAndCollect(url: recording) { text, creationDate in
-                if let text = text {
-                    let dateToUse = creationDate ?? Date()
+            transcribeAndCollect(url: recording.url, date: recording.date) { text, date in
+                if let text = text, let date = date {
                     DispatchQueue.main.async {
-                        self.transcriptions.append((date: dateToUse, text: text))
+                        self.transcriptions.append((date: date, text: text))
                         // Process next after completion
                         processNext(index: index + 1)
                     }

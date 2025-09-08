@@ -45,11 +45,24 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         print("📱 Received file: \(file.fileURL.lastPathComponent)")
         
         var isQueuedRecording = false
+        var recordingDate = Date()
+        var location = "Unknown"
+        
         if let metadata = file.metadata {
             print("📱 File metadata: \(metadata)")
             if metadata["queued"] as? Bool == true {
                 print("📱 Processing queued recording from offline mode")
                 isQueuedRecording = true
+            }
+            
+            if let timestamp = metadata["date"] as? TimeInterval {
+                recordingDate = Date(timeIntervalSince1970: timestamp)
+                print("📱 Recording date: \(recordingDate)")
+            }
+            
+            if let recordingLocation = metadata["location"] as? String {
+                location = recordingLocation
+                print("📱 Recording location: \(location)")
             }
         }
         
@@ -87,7 +100,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
                 // Copy the system-provided file URL (already on iPhone) to Documents
                 try fileManager.copyItem(at: file.fileURL, to: destinationURL)
                 print("📱 Copied received file to Documents: \(destinationURL.lastPathComponent)")
-                AudioRecorderManager.shared.addRecording(from: destinationURL)
+                AudioRecorderManager.shared.addRecording(from: destinationURL, date: recordingDate, location: location)
                 print("✅ Recording added successfully - Transfer complete")
             } catch {
                 print("❌ Failed to copy received file: \(error.localizedDescription)")
@@ -113,7 +126,6 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
             replyHandler([:])
         }
     }
-}
 
     func sessionReachabilityDidChange(_ session: WCSession) {
         print("📱 Reachability changed: \(session.isReachable)")
@@ -153,7 +165,7 @@ class PhoneSessionManager: NSObject, ObservableObject, WCSessionDelegate {
             }
         }
     }
+}
 
 
 // MARK: - Receiving messages
-
