@@ -49,8 +49,15 @@ class RecordingQueue: ObservableObject {
     }
     
     func getPendingRecordings() -> [URL] {
-        return recordings
-            .filter { !$0.isUploaded }
-            .compactMap { URL(fileURLWithPath: $0.fileURL) }
+        var validURLs: [URL] = []
+        for recording in recordings where !recording.isUploaded {
+            let filePath = recording.fileURL
+            if FileManager.default.fileExists(atPath: filePath) {
+                validURLs.append(URL(fileURLWithPath: filePath))
+            } else {
+                markAsUploaded(fileURL: URL(fileURLWithPath: filePath))
+            }
+        }
+        return validURLs
     }
 }

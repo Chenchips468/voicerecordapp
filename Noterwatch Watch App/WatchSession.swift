@@ -157,6 +157,7 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
                 if let _ = reply["date"] as? Date {
                     print("⌚️ Received date from phone, proceeding with recording transfer")
                     self.proceedWithRecordingTransfer(fileURL)
+                    self.syncAndClearQueuedRecordings()
                 } else {
                     print("❌ No date received from phone, queueing recording")
                     self.handleOfflineRecording(fileURL)
@@ -186,6 +187,29 @@ final class WatchSession: NSObject, ObservableObject, WCSessionDelegate {
         }
         
         print("⌚️ Initiated file transfer to iPhone's didReceive delegate method")
+    }
+    
+    private func syncAndClearQueuedRecordings() {
+        let pendingRecordings = recordingQueue.getPendingRecordings()
+        guard !pendingRecordings.isEmpty else { return }
+        
+        print("⌚️ Syncing and clearing \(pendingRecordings.count) queued recordings")
+        for fileURL in pendingRecordings {
+            print("⌚️ Checking file existence for \(fileURL.path)")
+            guard FileManager.default.fileExists(atPath: fileURL.path) else { continue }
+            
+            print("⌚️ Syncing queued recording: \(fileURL.lastPathComponent)")
+            let transfer = WCSession.default.transferFile(fileURL, metadata: ["type": "recording", "queued": true])
+            
+            transfer.progress.observe(\.fractionCompleted) { progress, _ in
+                DispatchQueue.main.async {
+                    let percentage = Int(progress.fractionCompleted * 100)
+                    self.status = "Syncing queued: \(percentage)%"
+                }
+            }
+            
+            recordingQueue.markAsUploaded(fileURL: fileURL)
+        }
     }
     
     func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {

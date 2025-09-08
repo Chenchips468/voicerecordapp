@@ -70,7 +70,7 @@ struct WatchContentView2: View {
                 }
             }
             .buttonStyle(.borderedProminent)
-            .disabled(!wc.isReachable)
+            .disabled(false)
         }
         .padding()
     }
