@@ -13,6 +13,14 @@ struct Noterwatch_Watch_AppApp: App {
     var body: some Scene {
         WindowGroup {
             WatchContentView2()
+                .onOpenURL { url in
+                    if url.scheme == "testsadapp", url.host == "startRecording" {
+                        print("⌚️ Watch app opened via Shortcut to start recording")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            WatchRecorderManager.shared.shouldStartRecordingFromShortcut = true
+                        }
+                    }
+                }
         }
     }
 }

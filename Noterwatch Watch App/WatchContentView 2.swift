@@ -5,7 +5,10 @@ import WatchKit
 import AVFoundation
 
 class WatchRecorderManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
+    static let shared = WatchRecorderManager()
+    private override init() { }
     @Published var isRecording: Bool = false
+    @Published var shouldStartRecordingFromShortcut = false
     private var audioRecorder: AVAudioRecorder?
     private var recordingURL: URL?
 
@@ -47,7 +50,7 @@ class WatchRecorderManager: NSObject, ObservableObject, AVAudioRecorderDelegate 
 
 struct WatchContentView2: View {
     @StateObject private var wc = WatchSession.shared
-    @StateObject private var recorder = WatchRecorderManager()
+    @StateObject private var recorder = WatchRecorderManager.shared
 
     var body: some View {
         VStack(spacing: 8) {
@@ -73,6 +76,13 @@ struct WatchContentView2: View {
             .disabled(false)
         }
         .padding()
+        .onChange(of: recorder.shouldStartRecordingFromShortcut) { newValue in
+            if newValue && !recorder.isRecording {
+                recorder.startRecording()
+                wc.isRecordingUI = true
+                recorder.shouldStartRecordingFromShortcut = false
+            }
+        }
     }
 }
 
@@ -85,12 +95,8 @@ struct StartRecordingIntentWatch: AppIntent {
 
     func perform() throws -> some IntentResult {
         DispatchQueue.main.async {
-            let recorder = WatchRecorderManager()
-            if !recorder.isRecording {
-                recorder.startRecording()
-                WatchSession.shared.isRecordingUI = true
-                print("⌚️ Started recording from Siri shortcut")
-            }
+            WatchRecorderManager.shared.shouldStartRecordingFromShortcut = true
+            print("⌚️ Triggered recording request from Siri shortcut")
         }
         return .result()
     }
