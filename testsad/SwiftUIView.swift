@@ -3,7 +3,7 @@ import AppIntents
 import Speech
 import AVFoundation
 import UIKit
-
+/*
 // MARK: - ContentView
 struct SwiftUIView: View {
     @Environment(\.scenePhase) private var scenePhase
@@ -315,3 +315,4 @@ struct MyShortcuts: AppShortcutsProvider {
 #Preview {
     SwiftUIView()
 }
+*/

@@ -1,4 +1,5 @@
 import SwiftUI
+import AppIntents
 import AVFoundation
 
 struct Recording: Identifiable {
@@ -14,6 +15,7 @@ class AudioRecorderManager: NSObject, ObservableObject, AVAudioRecorderDelegate 
     
     @Published var recordings: [Recording] = []
     @Published var currentLevel: Float = 0.0
+    @Published var shouldStartRecordingFromShortcut = false
     
     var audioRecorder: AVAudioRecorder?
     var audioPlayers: [UUID: AVPlayer] = [:]
@@ -253,10 +255,46 @@ struct PhoneRecordMp3: View {
                 }
             }
             .navigationTitle("Recordings")
+            .onChange(of: recorder.shouldStartRecordingFromShortcut) { newValue in
+                if newValue && !isRecording {
+                    if isRecording {
+                        recorder.stopRecording()
+                    } else {
+                        recorder.startRecording()
+                    }
+                    isRecording.toggle()
+                    recorder.shouldStartRecordingFromShortcut = false
+                }
+            }
         }
     }
 }
+// MARK: - Siri Shortcut Intent
+struct StartRecordingIntent: AppIntent {
+    static var title: LocalizedStringResource = "Start Recording"
+    static var openAppWhenRun: Bool = true
 
-#Preview {
-    PhoneRecordMp3()
+    func perform() async throws -> some IntentResult {
+        print("⚡ Shortcut triggered")
+
+        if let url = URL(string: "testsadapp://startRecording") {
+            await MainActor.run {
+                UIApplication.shared.open(url)
+            }
+        }
+
+        return .result()
+    }
+}
+
+// MARK: - App Shortcuts Provider
+struct MyShortcuts: AppShortcutsProvider {
+    static var appShortcuts: [AppShortcut] {
+        AppShortcut(
+            intent: StartRecordingIntent(),
+            phrases: ["Start recording in \(.applicationName)"],
+            shortTitle: "Start Recording",
+            systemImageName: "mic.fill"
+        )
+    }
 }
