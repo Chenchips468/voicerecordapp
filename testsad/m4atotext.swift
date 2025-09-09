@@ -56,6 +56,10 @@ struct m4atotext: View {
             TextEditor(text: $txtContent)
                 .frame(minHeight: 200)
                 .border(Color.gray, width: 1)
+            Button("Download Transcriptions") {
+                downloadTranscriptions()
+            }
+            .padding(.top, 10)
         }
         .padding()
         .onAppear {
@@ -206,6 +210,72 @@ struct m4atotext: View {
     private func getTxtFileURL() -> URL {
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         return documentsURL.appendingPathComponent("Transcriptions.txt")
+    }
+    
+    private func downloadTranscriptions() {
+        // First, rebuild txtContent as in viewAllTranscriptions
+        transcriptions.removeAll()
+        errorMessage = nil
+        txtContent = ""
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+
+        let recordingsCopy = AudioRecorderManager.shared.recordings
+        func processNext(index: Int) {
+            if index >= recordingsCopy.count {
+                self.transcriptions.sort { $0.date > $1.date }
+                var rebuiltContent = ""
+                for entry in self.transcriptions {
+                    let dateString = dateFormatter.string(from: entry.date)
+                    rebuiltContent.append("[\(dateString)] \(entry.text)\n")
+                }
+                DispatchQueue.main.async {
+                    self.txtContent = rebuiltContent
+                    
+                    // Ensure file exists — create or overwrite with current txtContent
+                    let fileURL = self.getTxtFileURL()
+                    do {
+                        try self.txtContent.write(to: fileURL, atomically: true, encoding: .utf8)
+                    } catch {
+                        self.errorMessage = "Failed to create file: \(error.localizedDescription)"
+                        return
+                    }
+                    
+                    // Copy file to a temporary location for user export
+                    let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Transcriptions.txt")
+                    do {
+                        if FileManager.default.fileExists(atPath: tempURL.path) {
+                            try FileManager.default.removeItem(at: tempURL)
+                        }
+                        try FileManager.default.copyItem(at: fileURL, to: tempURL)
+                    } catch {
+                        self.errorMessage = "Failed to copy file for export: \(error.localizedDescription)"
+                        return
+                    }
+                    
+                    let controller = UIDocumentPickerViewController(forExporting: [tempURL])
+                    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let rootVC = scene.windows.first?.rootViewController {
+                        rootVC.present(controller, animated: true, completion: nil)
+                    }
+                }
+                return
+            }
+            let recording = recordingsCopy[index]
+            transcribeAndCollect(url: recording.url, date: recording.date) { text, date in
+                if let text = text, let date = date {
+                    DispatchQueue.main.async {
+                        self.transcriptions.append((date: date, text: text))
+                        processNext(index: index + 1)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        processNext(index: index + 1)
+                    }
+                }
+            }
+        }
+        processNext(index: 0)
     }
 }
 
